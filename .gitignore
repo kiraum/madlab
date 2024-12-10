@@ -1,4 +1,12 @@
 images/
 *.bak
-!labs/clab-quickstart/clab-ceoslab/*.yml
-labs/clab-quickstart/clab-ceoslab/*
+labs/clab-base/*
+
+!labs/clab-base/*.yml
+!labs/clab-base/inventory/
+!labs/clab-base/device_configs/
+!labs/clab-base/scripts/
+!labs/clab-base/images/
+!labs/clab-base/images/*.png
+
+**/__pycache__
