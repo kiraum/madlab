@@ -1,0 +1,4 @@
+images/
+*.bak
+!labs/clab-quickstart/clab-ceoslab/*.yml
+labs/clab-quickstart/clab-ceoslab/*

@@ -1,0 +1,28 @@
+---
+name: ceoslab
+prefix: ""
+
+mgmt:
+  network: mgmt
+  ipv4_subnet: 172.20.20.0/24
+topology:
+  kinds:
+    ceos:
+      image: ceos:4.33.0F
+    linux:
+      image: ghcr.io/hellt/network-multitool
+  nodes:
+    ceos-01:
+      kind: ceos
+    ceos-02:
+      kind: ceos
+    linux-01:
+      kind: linux
+      exec:
+        - ip addr add 172.20.20.69/30 dev eth1
+        - ip route add 172.20.20.0/24 via 172.20.20.1
+
+  links:
+   - endpoints: ["ceos-01:eth1", "ceos-02:eth1"]
+   - endpoints: ["linux-01:eth1", "ceos-01:eth2"]
+   - endpoints: ["linux-01:eth2", "ceos-01:eth3"]
