@@ -63,17 +63,20 @@ containerlab deploy -t ceoslab.clab.yml
 3. Inspect running containers:
 ```bash
 # containerlab inspect -t ceoslab.clab.yml
-INFO[0001] Parsing & checking topology file: ceoslab.clab.yml
+INFO[0000] Parsing & checking topology file: ceoslab.clab.yml
 ╭──────────┬─────────────────────────────────┬─────────┬────────────────╮
 │   Name   │            Kind/Image           │  State  │ IPv4/6 Address │
 ├──────────┼─────────────────────────────────┼─────────┼────────────────┤
-│ ceos-01  │ ceos                            │ running │ 172.20.20.3    │
+│ ceos-01  │ ceos                            │ running │ 172.20.20.4    │
 │          │ ceos:4.33.0F                    │         │ N/A            │
 ├──────────┼─────────────────────────────────┼─────────┼────────────────┤
-│ ceos-02  │ ceos                            │ running │ 172.20.20.4    │
+│ ceos-02  │ ceos                            │ running │ 172.20.20.5    │
 │          │ ceos:4.33.0F                    │         │ N/A            │
 ├──────────┼─────────────────────────────────┼─────────┼────────────────┤
-│ linux-01 │ linux                           │ running │ 172.20.20.2    │
+│ linux-01 │ linux                           │ running │ 172.20.20.3    │
+│          │ ghcr.io/hellt/network-multitool │         │ N/A            │
+├──────────┼─────────────────────────────────┼─────────┼────────────────┤
+│ linux-02 │ linux                           │ running │ 172.20.20.2    │
 │          │ ghcr.io/hellt/network-multitool │         │ N/A            │
 ╰──────────┴─────────────────────────────────┴─────────┴────────────────╯
 ```
@@ -151,4 +154,85 @@ Kernel version: 6.8.0-47-generic
 Uptime: 6 minutes
 Total memory: 8125764 kB
 Free memory: 6657088 kB
+```
+
+if you want to check your topology:
+```bash
+# containerlab graph -t ceoslab.clab.yml
+WARN[0000] Attribute "ipv4_subnet" is deprecated and will be removed in the future. Change it to "ipv4-subnet"
+INFO[0000] Parsing & checking topology file: ceoslab.clab.yml
+INFO[0000] Serving topology graph on http://0.0.0.0:50080
+```
+
+Open a browser and navigate to http://0.0.0.0:50080:
+![Network Topology](labs/clab-base/images/topology.png "Network Topology Diagram")
+
+## Script usage examples
+```bash
+# python3 scripts/mgmt.py
+usage: mgmt.py [-h] {deploy,info} ...
+
+positional arguments:
+  {deploy,info}  Commands
+    deploy       Deploy configuration
+    info         Get device information
+
+options:
+  -h, --help     show this help message and exit
+```
+
+### get facts
+```bash
+# python3 scripts/mgmt.py info --limit ceos-01
+get_device_info*****************************************************************
+* ceos-01 ** changed : False ***************************************************
+vvvv get_device_info ** changed : False vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv INFO
+---- Getting info from ceos-01 ** changed : False ------------------------------ INFO
+{ 'facts': { 'fqdn': 'ceos-01',
+             'hostname': 'ceos-01',
+             'interface_list': ['Ethernet1', 'Ethernet2', 'Management0'],
+             'model': 'cEOSLab',
+             'os_version': '4.33.0F-39050855.4330F',
+             'serial_number': '',
+             'uptime': 5461.910061120987,
+             'vendor': 'Arista'},
+  'interfaces': { 'Ethernet1': { 'description': 'test69',
+                                 'is_enabled': True,
+                                 'is_up': True,
+                                 'last_flapped': 1733867941.7668226,
+                                 'mac_address': 'AA:C1:AB:C6:B9:14',
+                                 'mtu': 9194,
+                                 'speed': 1000.0},
+                  'Ethernet2': { 'description': '',
+                                 'is_enabled': True,
+                                 'is_up': True,
+                                 'last_flapped': 1733867941.752524,
+                                 'mac_address': 'AA:C1:AB:44:88:37',
+                                 'mtu': 9194,
+                                 'speed': 1000.0},
+                  'Management0': { 'description': '',
+                                   'is_enabled': True,
+                                   'is_up': True,
+                                   'last_flapped': 1733867834.1633537,
+                                   'mac_address': '02:42:AC:14:14:04',
+                                   'mtu': 1500,
+                                   'speed': 1000.0}}}
+^^^^ END get_device_info ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+### deploy config (-c to deploy, without only diff)
+```bash
+# python3 scripts/mgmt.py deploy --limit ceos-0* -c
+deploy_network******************************************************************
+* ceos-01 ** changed : True ****************************************************
+vvvv deploy_network ** changed : False vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv INFO
+---- Configuring (replace) ceos-01! ** changed : True -------------------------- INFO
+interface Ethernet1
+-   description test3
++   description test69
+^^^^ END deploy_network ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* ceos-02 ** changed : False ***************************************************
+vvvv deploy_network ** changed : False vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv INFO
+---- Configuring (replace) ceos-02! ** changed : False ------------------------- INFO
+^^^^ END deploy_network ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```

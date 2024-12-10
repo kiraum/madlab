@@ -1,0 +1,17 @@
+---
+all:
+  children:
+    ceos:
+      hosts:
+        ceos-01:
+          hostname: 172.20.20.4
+          platform: eos
+        ceos-02:
+          hostname: 172.20.20.5
+          platform: eos
+    linux:
+      hosts:
+        linux-01:
+          hostname: 172.20.20.3
+        linux-02:
+          hostname: 172.20.20.2
