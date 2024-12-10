@@ -1,0 +1,21 @@
+---
+
+services:
+  containerlab:
+    image: ghcr.io/srl-labs/clab:latest
+    privileged: true
+    network_mode: host
+    pid: host
+    tty: true
+    stdin_open: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /run/netns:/run/netns:rw
+      - /etc/hosts:/etc/hosts
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - /proc:/proc:rw 
+      - ./:${PWD}
+    working_dir: ${PWD}
+    cap_add:
+      - ALL
+    command: bash
